@@ -1,4 +1,4 @@
 #!/bin/bash -x
 
-iptables -F OUTPUT
+iptables -F
 iptables-save | iptables-restore
