@@ -28,9 +28,12 @@ iptables -A LOGIC_CHAIN -m recent --name buzz     --rcheck --hitcount 5  -j BUZZ
 iptables -A LOGIC_CHAIN -m recent --name fizz     --rcheck --hitcount 3  -j FIZZ
 iptables -A LOGIC_CHAIN                                                  -j NOTHING
 
-iptables -A FIZZBUZZ -m recent --name fizzbuzz --remove -j REJECT --reject-with icmp-port-unreachable  # CODE = 3
-iptables -A BUZZ     -m recent --name buzz     --remove -j REJECT --reject-with icmp-proto-unreachable # CODE = 2
-iptables -A FIZZ     -m recent --name fizz     --remove -j REJECT --reject-with icmp-host-unreachable  # CODE = 1
 iptables -A NOTHING                                     -j REJECT --reject-with icmp-net-unreachable   # CODE = 0
+iptables -A FIZZ     -m recent --name fizz     --remove -j REJECT --reject-with icmp-host-unreachable  # CODE = 1
+iptables -A BUZZ     -m recent --name buzz     --remove -j REJECT --reject-with icmp-proto-unreachable # CODE = 2
+iptables -A FIZZBUZZ -m recent --name fizzbuzz --remove -j REJECT --reject-with icmp-port-unreachable  # CODE = 3
+
+iptables -I FIZZBUZZ 1 -m recent --name fizz --remove
+iptables -I FIZZBUZZ 1 -m recent --name buzz --remove
 
 iptables-save | iptables-restore
