@@ -2,6 +2,7 @@
 
 iptables -F
 
+iptables -N RESET_CHAIN
 iptables -N COUNTER_CHAIN
 iptables -N LOGIC_CHAIN
 iptables -N NOTHING
@@ -9,8 +10,14 @@ iptables -N FIZZ
 iptables -N BUZZ
 iptables -N FIZZBUZZ
 
+iptables -A OUTPUT -p icmp --icmp-type 8 -j RESET_CHAIN
 iptables -A OUTPUT -p icmp --icmp-type 8 -j COUNTER_CHAIN
 iptables -A OUTPUT -p icmp --icmp-type 8 -j LOGIC_CHAIN
+
+iptables -A RESET_CHAIN -m u32 ! --u32 "0>>22&0x3C@6>>16=0x01" -j RETURN
+iptables -A RESET_CHAIN -m recent --name fizz      --remove
+iptables -A RESET_CHAIN -m recent --name buzz      --remove
+iptables -A RESET_CHAIN -m recent --name fizzbuzz  --remove
 
 iptables -A COUNTER_CHAIN -m recent --name fizz     --set
 iptables -A COUNTER_CHAIN -m recent --name buzz     --set
